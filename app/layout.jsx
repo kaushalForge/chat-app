@@ -1,8 +1,8 @@
 // app/layout.jsx
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ChatUI from "@/components/ChatUI/page";
 import FriendsUI from "@/components/FreindsUI/page";
+import ChatUI from "@/components/ChatUI/page";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +30,6 @@ export default function RootLayout({ children }) {
           <div className=" w-full lg:block lg:w-1/4 border-r border-gray-300">
             <FriendsUI />
           </div>
-
           {/* Chat area: full width on small screens */}
           <div className="w-full lg:w-3/4 lg:block hidden">
             <ChatUI />
