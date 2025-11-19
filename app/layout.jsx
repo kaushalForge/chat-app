@@ -27,11 +27,11 @@ export default function RootLayout({ children }) {
       >
         <div className="flex h-screen w-full">
           {/* Friends list: hidden on small screens */}
-          <div className="w-full lg:w-[25%] border-r border-gray-300">
+          <div className=" w-full lg:block lg:w-1/4 border-r border-gray-300">
             <FriendsUI />
           </div>
           {/* Chat area: full width on small screens */}
-          <div className="hidden lg:block w-full lg:w-3/4">
+          <div className="w-full lg:w-3/4 lg:block hidden">
             <ChatUI />
           </div>
         </div>
