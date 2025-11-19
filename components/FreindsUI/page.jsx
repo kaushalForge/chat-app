@@ -7,7 +7,7 @@ import { Search } from "lucide-react";
 const Page = () => {
   const chats = [
     { name: "Aayush", msg: "Code push gareko xu bro.", time: "21:18" },
-    { name: "‪+977 981-5521034‬", msg: "📷 Image received", time: "21:05" },
+    { name: "Saroj", msg: "📷 Image received", time: "21:05" },
     { name: "Mina", msg: "Thik cha, worry nagarna.", time: "20:51" },
     { name: "Rohan", msg: "🎤 Voice message", time: "20:40" },
     { name: "Sujal", msg: "✓✓ Aba milxa bro!", time: "20:21" },

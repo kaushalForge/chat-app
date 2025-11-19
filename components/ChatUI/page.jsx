@@ -1,14 +1,26 @@
+// components/ChatUI/page.jsx
+"use client";
+
 import React from "react";
 import ChatHeader from "./ChatHeader";
+import ChatFooter from "./ChatFooter";
+import Chat from "./Chat";
 
-const page = () => {
+const Page = () => {
   return (
-    <>
-      <div>
-        <ChatHeader />
+    <div className="flex flex-col h-screen bg-[#2C2C2C]">
+      {/* Header */}
+      <ChatHeader />
+
+      {/* Chat messages area */}
+      <div className="flex-1 overflow-y-auto p-4">
+        <Chat />
       </div>
-    </>
+
+      {/* Footer */}
+      <ChatFooter />
+    </div>
   );
 };
 
-export default page;
+export default Page;
