@@ -1,10 +1,10 @@
+import Friends from '@/components/Friends-UI/Friends'
 import React from 'react'
-import Section from '@/components/LandingPage/Section'
 
 const page = () => {
   return (
     <div>
-      <Section />
+      <Friends />
     </div>
   )
 }
