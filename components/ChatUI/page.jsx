@@ -10,7 +10,9 @@ const Page = () => {
   return (
     <div className="flex flex-col h-screen bg-[#2C2C2C]">
       {/* Header */}
-      <ChatHeader />
+      <div className="w-full h-16 border-b border-gray-700">
+        <ChatHeader />
+      </div>
 
       {/* Chat messages area */}
       <div className="flex-1 overflow-y-auto p-4">

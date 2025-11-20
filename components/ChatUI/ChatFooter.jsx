@@ -9,7 +9,6 @@ const ChatFooter = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const textareaRef = useRef(null);
 
-  // Connect to backend explicitly
   const socketRef = useRef(
     io("http://localhost:4000", {
       transports: ["websocket", "polling"],

@@ -1,39 +1,47 @@
-import { createServer } from "node:http";
-import next from "next";
+// server.js
+import { createServer } from "http";
 import { Server } from "socket.io";
+import dbConnect from "./lib/dbConnection.js";
+import dotenv from "dotenv";
 
-const dev = process.env.NODE_ENV !== "production";
-const hostname = "localhost";
-const port = 4000;
+dotenv.config();
 
-const app = next({ dev, hostname, port });
-const handler = app.getRequestHandler();
+const startServer = async () => {
+  try {
+    await dbConnect();
+    // 2. Create HTTP server
+    const server = createServer();
 
-app.prepare().then(() => {
-  const httpServer = createServer(handler);
-
-  const io = new Server(httpServer, {
-    cors: {
-      origin: "http://localhost:3000", // frontend origin
-      methods: ["GET", "POST"],
-      credentials: true,
-    },
-  });
-
-  io.on("connection", (socket) => {
-    console.log("User connected:", socket.id);
-
-    socket.on("message", (msg) => {
-      console.log("Message received:", msg);
-      io.emit("server-message", msg); // broadcast to all clients
+    // 3. Setup Socket.IO with CORS
+    const io = new Server(server, {
+      cors: {
+        origin: process.env.CLIENT_URL || "*",
+        methods: ["GET", "POST"],
+      },
     });
 
-    socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
-    });
-  });
+    // 4. Handle Socket.IO connections
+    io.on("connection", (socket) => {
+      console.log("Socket connected ✅", socket.id);
 
-  httpServer.listen(port, () => {
-    console.log(`> Ready on http://${hostname}:${port}`);
-  });
-});
+      socket.on("message", (msg) => {
+        console.log("Message received:", msg);
+        io.emit("server-message", msg);
+      });
+
+      socket.on("disconnect", () => {
+        console.log("Socket disconnected ❌", socket.id);
+      });
+    });
+
+    // 5. Start server
+    const port = process.env.PORT || 5000;
+    server.listen(port, () => {
+      console.log(`Server running on port ${port} 🚀`);
+    });
+  } catch (err) {
+    console.error("Server failed to start ❌", err);
+  }
+};
+
+startServer();
