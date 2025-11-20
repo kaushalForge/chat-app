@@ -1,4 +1,5 @@
 // app/layout.jsx
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import FriendsUI from "@/components/FreindsUI/page";

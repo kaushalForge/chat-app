@@ -1,18 +1,32 @@
-// components/ChatFooter.jsx
-"use client";
-
-import React, { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
+import { io } from "socket.io-client";
 import { Smile, Paperclip, Mic, Send, X } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
 
 const ChatFooter = () => {
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const textareaRef = useRef(null);
 
+  // Connect to backend explicitly
+  const socketRef = useRef(
+    io("http://localhost:4000", {
+      transports: ["websocket", "polling"],
+    })
+  );
+
+  useEffect(() => {
+    socketRef.current.on("server-message", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    return () => socketRef.current.disconnect();
+  }, []);
+
   const handleSend = () => {
-    if (message.trim() === "") return;
-    console.log("Send message:", message);
+    if (!message.trim()) return;
+    socketRef.current.emit("message", message);
     setMessage("");
   };
 
@@ -23,7 +37,6 @@ const ChatFooter = () => {
 
   return (
     <div className="w-full bg-zinc-800 border-t border-gray-700 sticky bottom-0 z-10">
-      {/* Emoji picker overlay */}
       {showEmojiPicker && (
         <div className="absolute bottom-16 left-2 md:left-4 z-20">
           <EmojiPicker
@@ -41,7 +54,6 @@ const ChatFooter = () => {
       )}
 
       <div className="flex items-center gap-2 p-2">
-        {/* Emoji Button */}
         <button
           className="text-gray-400 hover:text-white"
           onClick={() => setShowEmojiPicker((prev) => !prev)}
@@ -49,7 +61,6 @@ const ChatFooter = () => {
           <Smile className="w-6 h-6" />
         </button>
 
-        {/* Stretchable Textarea */}
         <textarea
           ref={textareaRef}
           value={message}
@@ -65,18 +76,19 @@ const ChatFooter = () => {
           }}
         />
 
-        {/* Attach File */}
         <button className="text-gray-400 hover:text-white">
           <Paperclip className="w-6 h-6" />
         </button>
 
-        {/* Send / Mic */}
         {message.trim() === "" ? (
           <button className="text-gray-400 hover:text-white">
             <Mic className="w-6 h-6" />
           </button>
         ) : (
-          <button onClick={handleSend} className="text-gray-400 hover:text-white">
+          <button
+            onClick={handleSend}
+            className="text-gray-400 hover:text-white"
+          >
             <Send className="w-6 h-6" />
           </button>
         )}

@@ -12,7 +12,10 @@ const ChatHeader = ({
       {/* Left: Avatar + Name + Status */}
       <div className="flex items-center gap-3">
         <img
-          src={user.avatar || "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
+          src={
+            user.avatar ||
+            "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          }
           alt={user.name}
           className="w-10 h-10 rounded-full object-cover"
         />
