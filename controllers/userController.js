@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import dbConnection from "@/lib/dbConnection";
 import User from "@/models/User";
-import { hashedPassword, comparePassword } from "@/utils/hashPassword";
-import { genToken } from "@/utils/authorization";
+import { hashPassword, comparePassword } from "@/utils/hashPassword";
+import { genToken } from "@/utils/generateToken";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 export const signUpUser = async (req) => {
   try {
@@ -36,7 +37,7 @@ export const signUpUser = async (req) => {
     const newUser = await User.create({
       username,
       email,
-      password: await hashedPassword(password),
+      password: await hashPassword(password),
     });
 
     return NextResponse.json(
@@ -66,8 +67,8 @@ export const signInUser = async (req) => {
       );
     }
 
-    // STEP 1 — get user WITH password
-    const user = await User.findOne({ email });
+    // STEP 1 — get user WITH email
+    const user = await User.findOne({ email: email });
 
     if (!user) {
       return NextResponse.json(
@@ -88,7 +89,6 @@ export const signInUser = async (req) => {
     // STEP 3 — generate token
     const token = genToken({ email: user.email });
 
-    // STEP 4 — remove password before sending
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
 
@@ -102,6 +102,114 @@ export const signInUser = async (req) => {
     );
   } catch (err) {
     console.error("Sign-in error:", err);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+};
+
+export const updateUser = async (req, user) => {
+  try {
+    await dbConnection();
+
+    const form = await req.formData();
+    const oldPassword = form.get("oldPassword");
+    const newPassword = form.get("newPassword");
+    const email = form.get("email");
+    const file = form.get("profilePicture");
+
+    if (!oldPassword) {
+      return NextResponse.json(
+        { message: "Old password is required!" },
+        { status: 400 }
+      );
+    }
+
+    // Check if old password matches
+    const isMatch = await comparePassword(oldPassword, user.password);
+    if (!isMatch) {
+      return NextResponse.json(
+        { message: "Invalid credentials!" },
+        { status: 401 }
+      );
+    }
+
+    // Prevent new password = old password
+    if (newPassword && (await comparePassword(newPassword, user.password))) {
+      return NextResponse.json(
+        { message: "New password cannot be same as old password!" },
+        { status: 400 }
+      );
+    }
+
+    // Check if profile picture is same
+    let isProfileSame = true;
+    if (file && file.size > 0) {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const dataUri = `data:${file.type};base64,${buffer.toString("base64")}`;
+
+      // Compare base64 of old image (if exists) with new image
+      if (user.profilePicture) {
+        // Extract old public URL as base64 placeholder if you store it
+        // Here we assume direct comparison is not feasible, so we will update anyway
+        isProfileSame = false; // assume different if user uploads new file
+      } else {
+        isProfileSame = false; // new image uploaded
+      }
+    }
+
+    // Check if email same
+    const isEmailSame = email === user.email;
+    const isPasswordSame = !newPassword; // if no new password, same
+
+    if (isEmailSame && isPasswordSame && isProfileSame) {
+      return NextResponse.json(
+        { message: "No changes detected!" },
+        { status: 200 }
+      );
+    }
+
+    // Update email
+    if (!isEmailSame) user.email = email;
+
+    // Update password
+    if (newPassword) {
+      user.password = await hashPassword(newPassword);
+    }
+
+    // Update profile picture
+    if (file && file.size > 0) {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const dataUri = `data:${file.type};base64,${buffer.toString("base64")}`;
+
+      let oldPublicId;
+      if (user.profilePicture) {
+        const urlParts = user.profilePicture.split("/");
+        const fileNameWithExt = urlParts.pop();
+        const fileName = fileNameWithExt.split(".")[0];
+        const folderPath = urlParts.slice(-2).join("/");
+        oldPublicId = `${folderPath}/${fileName}`;
+      }
+
+      const cloudUpload = await uploadToCloudinary(
+        oldPublicId,
+        dataUri,
+        "Kurakani/profilePictures"
+      );
+
+      user.profilePicture = cloudUpload.secure_url;
+    }
+
+    await user.save();
+
+    const { password, ...safeUser } = user.toObject();
+    return NextResponse.json(
+      { message: "Account Updated!", user: safeUser },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error("User update error:", err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

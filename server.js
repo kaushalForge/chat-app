@@ -8,8 +8,6 @@ dotenv.config();
 
 const startServer = async () => {
   try {
-    await dbConnect();
-    // 2. Create HTTP server
     const server = createServer();
 
     // 3. Setup Socket.IO with CORS
