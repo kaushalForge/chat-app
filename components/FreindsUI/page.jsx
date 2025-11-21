@@ -5,6 +5,7 @@ import { Search } from "lucide-react";
 
 const Page = () => {
   const [activeChat, setActiveChat] = useState(null);
+  const [activeFilter, setActiveFilter] = useState("all"); // all / friends / groups
 
   const chats = [
     {
@@ -12,12 +13,14 @@ const Page = () => {
       msg: "Code push gareko xu bro.",
       time: "21:18",
       online: true,
+      type: "friend",
       img: "https://randomuser.me/api/portraits/men/32.jpg",
     },
     {
       name: "+977 981-5521034",
       msg: "📷 Image received",
       time: "21:05",
+      type: "friend",
       img: "https://randomuser.me/api/portraits/men/11.jpg",
     },
     {
@@ -25,45 +28,41 @@ const Page = () => {
       msg: "Thik cha, worry nagarna.",
       time: "20:51",
       online: true,
+      type: "friend",
       img: "https://randomuser.me/api/portraits/women/44.jpg",
-    },
-    {
-      name: "Rohan",
-      msg: "🎤 Voice message",
-      time: "20:40",
-      img: "https://randomuser.me/api/portraits/men/24.jpg",
-    },
-    {
-      name: "Sujal",
-      msg: "✓✓ Aba milxa bro!",
-      time: "20:21",
-      img: "https://randomuser.me/api/portraits/men/19.jpg",
-    },
-    {
-      name: "Aarju",
-      msg: "Goodnight!",
-      time: "19:59",
-      img: "https://randomuser.me/api/portraits/women/29.jpg",
     },
     {
       name: "Study Group",
       msg: "Kal ko assignment chai send garna.",
       time: "19:41",
+      type: "group",
       img: "https://randomuser.me/api/portraits/men/56.jpg",
     },
     {
-      name: "Prabesh",
-      msg: "Aile aaudai xu.",
-      time: "17:30",
-      img: "https://randomuser.me/api/portraits/men/48.jpg",
+      name: "Work Group",
+      msg: "Meeting 10am ma cha.",
+      time: "18:30",
+      type: "group",
+      img: "https://randomuser.me/api/portraits/men/45.jpg",
     },
     {
-      name: "Bishal Sir",
-      msg: "✓✓ Ramro banako xa!",
-      time: "13:50",
-      img: "https://randomuser.me/api/portraits/men/1.jpg",
+      name: "Rohan",
+      msg: "🎤 Voice message",
+      time: "20:40",
+      type: "friend",
+      img: "https://randomuser.me/api/portraits/men/24.jpg",
     },
   ];
+
+  // Filter chats based on activeFilter
+  const filteredChats = chats.filter(
+    (chat) =>
+      activeFilter === "friends"
+        ? chat.type === "friend"
+        : activeFilter === "groups"
+        ? chat.type === "group"
+        : true // all
+  );
 
   return (
     <div
@@ -87,20 +86,38 @@ const Page = () => {
         </div>
       </div>
 
+      {/* Filters: All / Friends / Groups */}
+      <div className="px-3 py-2 flex items-center gap-3 sticky top-[112px] bg-[#2C2C2C] z-10">
+        {["all", "friends", "groups"].map((filter) => (
+          <button
+            key={filter}
+            onClick={() => setActiveFilter(filter)}
+            className={`flex-1 py-1 px-3 rounded-full text-sm font-medium transition
+              ${
+                activeFilter === filter
+                  ? "bg-blue-600 text-white"
+                  : "bg-[#202c33] text-gray-300 hover:bg-[#1f2b32]"
+              }`}
+          >
+            {filter.charAt(0).toUpperCase() + filter.slice(1)}
+          </button>
+        ))}
+      </div>
+
       {/* Chat List */}
       <div>
-        {chats.map((chat, index) => (
+        {filteredChats.map((chat, index) => (
           <div
             key={index}
             onClick={() => setActiveChat(index)}
             className={`flex items-center justify-between p-3 cursor-pointer transition-all duration-200 
-            ${
-              activeChat === index
-                ? "bg-[#2a3942] shadow-inner"
-                : "hover:bg-[#1f2b32]"
-            }`}
+              ${
+                activeChat === index
+                  ? "bg-[#2a3942] shadow-inner"
+                  : "hover:bg-[#1f2b32]"
+              }`}
           >
-            {/* Avatar + name + message */}
+            {/* Avatar + Name + Message */}
             <div className="flex items-center gap-3">
               {/* Profile Picture */}
               <div className="relative w-11 h-11 rounded-full overflow-hidden">
@@ -109,12 +126,12 @@ const Page = () => {
                   alt={chat.name}
                   className="w-full h-full object-cover"
                 />
-                {chat.online && (
+                {chat.online && chat.type === "friend" && (
                   <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#0c1418]"></span>
                 )}
               </div>
 
-              {/* Name + Message */}
+              {/* Name + Last Message */}
               <div>
                 <div className="text-[15px] font-semibold">{chat.name}</div>
                 <div className="text-gray-400 text-[13px] truncate w-[160px]">
