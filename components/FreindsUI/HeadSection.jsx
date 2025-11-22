@@ -146,7 +146,7 @@ const HeadSection = () => {
           {mobileOpen && (
             <div
               className="absolute right-0 mt-2 w-56 bg-[#3C3C3C] rounded-lg shadow-xl 
-            overflow-hidden z-[999] border border-[#4b4b4b]"
+            overflow-hidden z-999 border border-[#4b4b4b]"
             >
               <MenuItem
                 icon={<Plus size={16} />}
