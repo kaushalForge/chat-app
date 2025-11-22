@@ -51,7 +51,7 @@ const ChatHeader = () => {
   return (
     <div className="w-full h-full bg-[#2C2C2C] flex items-center px-4 justify-between sticky top-0 z-10">
       {/* Left: Avatar + Name */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <img
           src={
             user?.profilePicture ||
@@ -69,7 +69,7 @@ const ChatHeader = () => {
       </div>
 
       {/* Right: Actions */}
-      <div className="relative flex items-center gap-4 text-gray-300">
+      <div className="flex relative items-center gap-4 text-gray-300">
         <Phone className="w-5 h-5 cursor-pointer hover:text-white transition" />
         <Video className="w-5 h-5 cursor-pointer hover:text-white transition" />
 

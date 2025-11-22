@@ -6,10 +6,12 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Mail, Lock } from "lucide-react";
 import Link from "next/link";
+import Loader1 from "@/components/UI/Loader/Loader1";
 
 const page = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -18,12 +20,14 @@ const page = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const response = await axios.post("/api/user/signin", form);
       localStorage.setItem("token", response?.data?.token);
       localStorage.setItem("user", JSON.stringify(response?.data?.user));
       router.push("/");
       toast.success(response.data.message, { position: "top-right" });
       setForm({ email: "", password: "" });
+      setLoading(false);
     } catch (err) {
       if (err.response) {
         console.log("API response:", err.response.data);
@@ -39,6 +43,7 @@ const page = () => {
         toast.error("Something went wrong", { position: "top-right" });
       }
     }
+    setLoading(false);
   };
 
   return (
@@ -84,9 +89,16 @@ const page = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-lg tracking-wide shadow-lg hover:shadow-indigo-400/50 hover:scale-105 transition-all duration-300"
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-lg tracking-wide shadow-lg hover:shadow-indigo-400/50 hover:scale-105 transition-all duration-300"
           >
-            Login
+            {loading ? (
+              <>
+                <span>Logging In</span>
+                <Loader1 />
+              </>
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
 

@@ -6,11 +6,12 @@ import { User, Mail, Lock } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import Link from "next/link";
+import Loader1 from "@/components/UI/Loader/Loader1";
 
 const page = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -20,9 +21,11 @@ const page = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const response = await axios.post("/api/user/signup", form);
       toast.success(response.data.message, { position: "top-right" });
       setForm({ username: "", email: "", password: "" });
+      setLoading(false);
       router.push("/sign-in");
     } catch (err) {
       if (err.response) {
@@ -38,6 +41,7 @@ const page = () => {
         console.log("Unknown error:", err);
         toast.error("Something went wrong", { position: "top-right" });
       }
+      setLoading(false);
     }
   };
 
@@ -98,9 +102,16 @@ const page = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-lg tracking-wide shadow-lg hover:shadow-indigo-400/50 hover:scale-105 transition-all duration-300"
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-lg tracking-wide shadow-lg hover:shadow-indigo-400/50 hover:scale-105 transition-all duration-300"
           >
-            Sign Up
+            {loading ? (
+              <>
+                <span>Signing Up</span>
+                <Loader1 />
+              </>
+            ) : (
+              "Sign Up"
+            )}
           </button>
         </form>
 

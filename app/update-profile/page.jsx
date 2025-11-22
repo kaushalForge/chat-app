@@ -43,7 +43,9 @@ const UpdateProfile = () => {
     if (!profileFile || !croppedAreaPixels) return;
 
     const croppedBlob = await getCroppedImg(profileFile, croppedAreaPixels);
-    const croppedFile = new File([croppedBlob], profileFile.name, { type: "image/jpeg" });
+    const croppedFile = new File([croppedBlob], profileFile.name, {
+      type: "image/jpeg",
+    });
 
     setProfileFile(croppedFile);
     setProfilePreview(URL.createObjectURL(croppedFile));
@@ -70,17 +72,27 @@ const UpdateProfile = () => {
 
       const token = localStorage.getItem("token");
       const res = await axios.post("/api/user/update", formData, {
-        headers: { "Content-Type": "multipart/form-data", authorization: token },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          authorization: token,
+        },
       });
 
-      toast.success(res.data.message || "Profile updated successfully!", { position: "top-right" });
+      toast.success(res.data.message || "Profile updated successfully!", {
+        position: "top-right",
+      });
       if (res.data.user) {
         localStorage.setItem("user", JSON.stringify(res.data.user));
         router.push("/");
       }
     } catch (err) {
       console.error(err);
-      toast.error(err.response?.data?.message || err.response?.data?.error || "Update failed", { position: "top-right" });
+      toast.error(
+        err.response?.data?.message ||
+          err.response?.data?.error ||
+          "Update failed",
+        { position: "top-right" }
+      );
     } finally {
       setLoading(false);
     }
@@ -88,7 +100,6 @@ const UpdateProfile = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-900 via-blue-900 to-cyan-900 px-4 relative">
-
       {/* Cropper Modal */}
       {showCropper && profilePreview && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/70">
@@ -153,8 +164,10 @@ const UpdateProfile = () => {
           💎 Update Profile
         </motion.h1>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
+        >
           {/* Profile Picture */}
           <motion.div className="flex flex-col items-center justify-center">
             <div className="relative w-48 h-48 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 overflow-hidden shadow-xl border-4 border-white flex items-center justify-center cursor-pointer">
@@ -229,7 +242,9 @@ const UpdateProfile = () => {
               whileTap={{ scale: 0.95 }}
               className="mt-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold p-4 rounded-2xl shadow-lg flex items-center justify-center gap-3 hover:from-cyan-500 hover:to-blue-500 transition-all disabled:opacity-50"
             >
-              {loading && <AiOutlineLoading3Quarters className="animate-spin" />}
+              {loading && (
+                <AiOutlineLoading3Quarters className="animate-spin" />
+              )}
               {loading ? "Updating..." : "Save Changes"}
             </motion.button>
           </motion.div>

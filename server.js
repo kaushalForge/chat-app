@@ -8,6 +8,7 @@ dotenv.config();
 
 const startServer = async () => {
   try {
+    dbConnect();
     const server = createServer();
 
     // 3. Setup Socket.IO with CORS
@@ -20,9 +21,7 @@ const startServer = async () => {
 
     // 4. Handle Socket.IO connections
     io.on("connection", (socket) => {
-      console.log("Socket connected ✅", socket.id);
-
-      socket.on("message", (msg) => {
+      socket.on("server-message", (msg) => {
         console.log("Message received:", msg);
         io.emit("server-message", msg);
       });

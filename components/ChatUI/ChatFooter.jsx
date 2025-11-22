@@ -1,32 +1,43 @@
+"use client";
+
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { io } from "socket.io-client";
+import { toast } from "sonner";
 import { Smile, Paperclip, Mic, Send, X } from "lucide-react";
 import EmojiPicker from "emoji-picker-react";
 
 const ChatFooter = () => {
+  const router = useRouter();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const textareaRef = useRef(null);
-
   const socketRef = useRef(
     io("http://localhost:4000", {
       transports: ["websocket", "polling"],
     })
   );
+  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    socketRef.current.on("server-message", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
-
-    return () => socketRef.current.disconnect();
+    setToken(localStorage.getItem("token"));
+    setUser(JSON.parse(localStorage.getItem("user")));
   }, []);
 
   const handleSend = () => {
-    if (!message.trim()) return;
-    socketRef.current.emit("message", message);
-    setMessage("");
+    if (token && user) {
+      if (!message.trim()) return;
+      socketRef.current.on("server-message", (msg) => {
+        setMessages((prev) => [...prev, msg]);
+      });
+      socketRef.current.emit("server-message", message);
+      setMessage("");
+    } else {
+      toast.error("You must be logged in to send messages");
+      router.push("/sign-in");
+    }
   };
 
   const onEmojiClick = (emojiData) => {
