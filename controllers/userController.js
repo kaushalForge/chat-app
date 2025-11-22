@@ -56,7 +56,6 @@ export const signUpUser = async (req) => {
 export const signInUser = async (req) => {
   try {
     await dbConnection();
-
     const body = await req.json();
     const { email, password } = body;
 

@@ -70,9 +70,21 @@ const ChatHeader = () => {
 
       {/* Right: Actions */}
       <div className="flex relative items-center gap-4 text-gray-300">
-        <Phone className="w-5 h-5 cursor-pointer hover:text-white transition" />
-        <Video className="w-5 h-5 cursor-pointer hover:text-white transition" />
-
+        <div className="flex items-center gap-2">
+          <img
+            src={
+              "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            }
+            alt="user avatar"
+            className="w-10 h-10 object-top rounded-full object-cover"
+          />
+          <div className="flex flex-col">
+            <span className="text-white font-semibold text-sm md:text-base">
+              Avatar
+            </span>
+            <span className="text-gray-400 text-xs md:text-sm">Offline</span>
+          </div>
+        </div>
         {/* Three-dot menu */}
         <div ref={menuRef} className="relative">
           <MoreVertical

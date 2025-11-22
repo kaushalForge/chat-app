@@ -3,14 +3,12 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import dbConnect from "./lib/dbConnection.js";
 import dotenv from "dotenv";
-
 dotenv.config();
 
 const startServer = async () => {
   try {
     dbConnect();
     const server = createServer();
-
     // 3. Setup Socket.IO with CORS
     const io = new Server(server, {
       cors: {
